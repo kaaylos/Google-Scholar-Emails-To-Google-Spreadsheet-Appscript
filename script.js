@@ -38,7 +38,7 @@ function processEmails() {
 
 function appendToSpreadsheet(data)
 {
-  var sheet= SpreadsheetApp.openById('1gdQcfoKH9NH5zWK1STzZ5YDzQuHWqIF1UXC7M_JpO54').getSheetByName('Sheet1');
+  var sheet= SpreadsheetApp.openById('<PUT YOUR SPREADSHEET ID HERE>').getSheetByName('Sheet1');
   for (row of data)
   {
     sheet.appendRow(row);
