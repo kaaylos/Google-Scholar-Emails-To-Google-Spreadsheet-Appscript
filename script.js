@@ -1,14 +1,26 @@
-function processEmails() {
-
-  data = [];
+function getThreads(){
   threads = GmailApp.search('in:inbox from:scholar-alerts -label:parsed');
+  Logger.log("Got "+threads.length+" threads to process");
+  return threads;
+}
+
+function labelProcessedThreads(threads){
+  
   const label = GmailApp.getUserLabelByName('parsed');
   if (label == null)
   {
     throw new EvalError("Create a label called 'parsed' in your gmail!!");
   }
+  
+  for (thread of threads)
+  {
+    thread.addLabel(label);
+  }
+}
 
-  Logger.log("Got "+threads.length+" threads to process");
+function processThreads(threads) {
+  data = [];
+
   for (thread of threads)
   {
     msgs = thread.getMessages()
@@ -35,7 +47,6 @@ function processEmails() {
         throw new Error("Got matching email but no links... The parser is probably broken...");
       }
     } //Loop over messages
-    thread.addLabel(label);
   } //Loop over threads
   return data;
 }
@@ -52,8 +63,11 @@ function appendToSpreadsheet(data)
 function dailyRun()
 {
   Logger.log("Fetching emails..");
-  data = processEmails();
+  threads = getThreads();
+  data = processThreads(threads);
   Logger.log("Got "+data.length+" links, appending to spreadsheet...");
   appendToSpreadsheet(data);
+  Logger.log("Marking threads as processed");
+  labelProcessedThreads(threads);
   Logger.log("Done!");
 }
